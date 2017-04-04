@@ -3,18 +3,15 @@ import numpy as np
 import time
 from tqdm import *
 
-txt_file = open("algo1-programming_prob-2sum.txt", "r")
-input_string = txt_file.read()
-nums = [int(num) for num in input_string.splitlines()]
-sorted_nums = set(nums)
-count = 0
-for num in tqdm(range(-10000,10001)):
-    two_sum = False
-    print(num)
-    for cand in sorted_nums:
+TXT_FILE = open("algo1-programming_prob-2sum.txt", "r")
+INPUT_STRING = TXT_FILE.read()
+NUMS = set([int(num) for num in INPUT_STRING.splitlines()])
+COUNT = 0
+for num in tqdm(range(-10000, 10001)):
+    for cand in NUMS:
         rem = num - cand
-        if rem in sorted_nums and rem != cand:
-            two_sum = True
-    if(two_sum):
-        count += 1
+        if rem in NUMS and rem != cand:
+            COUNT += 1
+            break
+print(COUNT)
 embed()

@@ -2,33 +2,31 @@ from IPython import embed
 import heapq
 from statistics import median
 
-txt_file = open("Median.txt", "r")
-input_string = txt_file.read()
-nums = [int(num) for num in input_string.splitlines()]
-#nums = nums[0:10]
-med_sum = 0
-low_list = ['help']
-high_list = ['help']
+TXT_FILE = open("Median.txt", "r")
+INPUT_STRING = TXT_FILE.read()
+NUMS = [int(num) for num in INPUT_STRING.splitlines()]
+MED_SUM = 0
+LOW_LIST = ['help']
+HIGH_LIST = ['help']
 
-for i, x in enumerate(nums):
-    if(i == 0):
-        med_sum +=x 
-    elif(i == 1):
-        med_sum += min(nums[0],nums[1])
-        low_list[0] = min(nums[0],nums[1])*-1
-        high_list[0] = max(nums[0],nums[1])
-        
+for i, x in enumerate(NUMS):
+    if i == 0:
+        MED_SUM += x
+    elif i == 1:
+        MED_SUM += min(NUMS[0], NUMS[1])
+        LOW_LIST[0] = min(NUMS[0], NUMS[1]) * -1
+        HIGH_LIST[0] = max(NUMS[0], NUMS[1])
     else:
-        highest_low = heapq.heappop(low_list)*-1
-        lowest_high = heapq.heappop(high_list)
-        sorted_cands = sorted([highest_low,lowest_high,x])
-        med_sum += sorted_cands[1]
-        heapq.heappush(low_list,sorted_cands[0]*-1)
-        heapq.heappush(high_list,sorted_cands[2])
+        highest_low = heapq.heappop(LOW_LIST)*-1
+        lowest_high = heapq.heappop(HIGH_LIST)
+        sorted_cands = sorted([highest_low, lowest_high, x])
+        MED_SUM += sorted_cands[1]
+        heapq.heappush(LOW_LIST, sorted_cands[0] * -1)
+        heapq.heappush(HIGH_LIST, sorted_cands[2])
         if i % 2 == 1:
-            heapq.heappush(low_list,sorted_cands[1]*-1)
+            heapq.heappush(LOW_LIST, sorted_cands[1] * -1)
         else:
-            heapq.heappush(high_list,sorted_cands[1])
+            heapq.heappush(HIGH_LIST, sorted_cands[1])
 
-print(med_sum % 10000)
-print(med_sum)
+print(MED_SUM % 10000)
+print(MED_SUM)
