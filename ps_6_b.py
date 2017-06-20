@@ -1,6 +1,6 @@
-from IPython import embed
 import heapq
 from statistics import median
+from IPython import embed
 
 TXT_FILE = open("Median.txt", "r")
 INPUT_STRING = TXT_FILE.read()

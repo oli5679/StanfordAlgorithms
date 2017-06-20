@@ -3,8 +3,8 @@ from copy import copy
 
 def dijkstra(paths,start,unexplored_val):
     """
-    Takes as input a list of undirected paths, a 'start' vertex and val for unconnected verteces. 
-    Returns shortest distance from start to all verteces (does not neccessarily handle negative edges)
+    Takes as input a list of undirected paths, a 'start' vertex and val for unconnected verteces.
+    Returns shortest distance from start to all verteces (does not handle negative edges)
     """
     #setup - only start explored. Distance of 0.
     len_paths = len(paths)
@@ -15,7 +15,7 @@ def dijkstra(paths,start,unexplored_val):
     distances[start] = 0
     #crossers = paths between explored and not. Key = destination. Value = distance from start.
     crossers = {path[0]:path[1] for path in paths[start]}
-    for x in range(len_paths -1):
+    for x in range(len_paths - 1):
         #Choose lowest value crosser
         chosen = min(crossers, key=crossers.get)
         #Also find its value
@@ -45,7 +45,7 @@ ROWS = INPUT_STRING.splitlines()
 PATHS = [row.split('\t') for row in ROWS]
 PATHS = [[[int(v) for v in path.split(',')] for path in row[1:-1]] for row in PATHS]
 PATHS = [[[path[0]-1, path[1]] for path in vertex] for vertex in PATHS]
-
+print(PATHS)
 #core algorithm
 DISTANCES = dijkstra(PATHS, 0, 100000)
 

@@ -4,12 +4,13 @@ import time
 from tqdm import *
 from copy import deepcopy
 
+#This is painfully slow, and seems to return right answer after very few iterations.
+
 def del_self_loops(edges_list):
     return [edge for edge in edges_list if edge[0] != edge[1]]
 
 def karger_cut(vertex_list, edges_list):
     while len(vertex_list) > 2:
-        #print(vertex_dict.keys())
         vertex_list, edges_list = single_contract(vertex_list, edges_list)
         edges_list = del_self_loops(edges_list)
     count = 0
@@ -50,6 +51,7 @@ EDGES_LIST = [list(x) for x in set(tuple(x) for x in EDGES_LIST)]
 MIN_VAL = 1000000000000000
 
 for x in tqdm(range(211932)):
+    #I think the copying part slows it down a lot.
     input_vertex = deepcopy(VERTEX_LIST)
     input_edges = deepcopy(EDGES_LIST)
     ans = karger_cut(input_vertex, input_edges)

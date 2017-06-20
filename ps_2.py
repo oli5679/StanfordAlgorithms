@@ -3,17 +3,17 @@ from math import floor
 from statistics import median
 
 #Count var only used to answer assignment questions. Not needed for other sorting tasks.
-
-def quick_sort(A, l, r, pivot_rule):
-    #base case
+def quick_sort(A, l, r, pivot_function):
+    #Base case. Return array.
     if r-l < 2:
         return A
     else:
         #Choose pivot (several different rules) and set lower numbers below and higher above.
-        A, p = pivot_rule(A, l, r)
+        #Returns 'pivoted' array and index of this pivot.
+        A, p = pivot_function(A, l, r)
         #Recursively sort both subarrays
-        A = quick_sort(A, l, p, pivot_rule)
-        A = quick_sort(A, p+1, r, pivot_rule)
+        A = quick_sort(A, l, p, pivot_function)
+        A = quick_sort(A, p+1, r, pivot_function)
         return A
 
 def pivot_first(A, l, r):
