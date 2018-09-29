@@ -7,10 +7,7 @@ JOBS = [[int(x) for x in row.split(' ')] for row in ROWS]
 JOBS_SCORES = [[job[0],job[1],job[0]-job[1]] for job in JOBS]
 SORTED_JOBS_SCORES = sorted(JOBS_SCORES, key=lambda x: -x[2])
 
-total = 0
-time = 0
-tot_j = 0
-tot_t = 0
+total, time, tot_j, tot_t = (0, 0, 0, 0)
 for job in SORTED_JOBS_SCORES:
     time += job[1]
     total += time*job[0]
