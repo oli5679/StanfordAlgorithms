@@ -1,37 +1,64 @@
 from IPython import embed
+import pandas as pd
 
-TXT_FILE = open("jobs.txt", "r")
-INPUT_STRING = TXT_FILE.read()
-ROWS = INPUT_STRING.splitlines()
-JOBS = [[int(x) for x in row.split(" ")] for row in ROWS]
+JOBS_PATH = "../data/jobs.txt"
 
-JOBS_SCORES = [[job[0], job[1], job[0] - job[1]] for job in JOBS]
-SORTED_JOBS_SCORES = sorted(JOBS_SCORES, key=lambda x: -x[2])
+EDGES_PATH = "../data/edges.txt"
 
-total, time, tot_j, tot_t = (0, 0, 0, 0)
-for job in SORTED_JOBS_SCORES:
-    time += job[1]
-    total += time * job[0]
-    tot_j += job[0]
-    tot_t += job[1]
 
-# print(time)
+def calulate_cost(df, sort_col):
+    sorted_df = df.copy().sort_values(by=[sort_col, "value"], ascending=[False, False])
+    sorted_df["cum_time"] = sorted_df.time.cumsum()
+    return (sorted_df.cum_time * sorted_df.value).sum()
 
-JOBS_SCORES_2 = [[job[0], job[1], job[0] * 1.0 / job[1]] for job in JOBS]
-SORTED_JOBS_SCORES_2 = sorted(JOBS_SCORES_2, key=lambda x: x[2])
 
-total_2 = 0
-time_2 = 0
-tot_j2 = 0
-tot_t2 = 0
-for job in SORTED_JOBS_SCORES_2:
-    time_2 += job[1]
-    total_2 += time_2 * job[0]
-    tot_j2 += job[0]
-    tot_t2 += job[1]
-# print(total_2)
-print(tot_j2)
-print(tot_j)
-print(tot_t2)
-print(tot_j2)
-embed()
+def job_min():
+    jobs = pd.read_csv(JOBS_PATH, sep=" ").rename(columns={"A": "value", "B": "time"})
+    jobs["difference"] = jobs["value"] - jobs["time"]
+    jobs["ratio"] = jobs["value"] / jobs["time"]
+
+    val_diff_heuristic = calulate_cost(jobs, "difference")
+    val_rat_heuristic = calulate_cost(jobs, "ratio")
+    print(
+        f"""Difference {val_diff_heuristic}
+            Ratio {val_rat_heuristic}"""
+    )
+
+
+class Prim:
+    def __init__(self, edges, start_vertex=1):
+        flipped_edges = edges.rename(columns={"start": "end", "end": "start"})
+        self.edges = edges.append(flipped_edges, sort=True)
+        self.nodes = edges["start"].append(edges["end"]).unique()
+        self.visited = [start_vertex]
+        self.tot_cost = 0
+        self.mst_edges = []
+
+    def greedy_add(self):
+        cand_edges = self.edges.loc[
+            (self.edges["start"].isin(self.visited))
+            & (~self.edges["end"].isin(self.visited))
+        ]
+        min_cost = cand_edges.cost.min()
+        new_node = cand_edges.loc[cand_edges.cost == min_cost].head(1)
+        new_edge = new_node["end"].item()
+        self.visited.append(new_edge)
+        self.tot_cost += min_cost
+        self.mst_edges.append(new_edge)
+
+    def find_mst(self):
+        while len(self.visited) < len(self.nodes):
+            self.greedy_add()
+
+
+def find_mst_cost():
+    edges = pd.read_csv(EDGES_PATH, sep=" ")
+    p = Prim(edges)
+    p.find_mst()
+    print(f"tot cost {p.tot_cost}")
+
+
+if __name__ == "__main__":
+    job_min()
+
+    find_mst_cost()
