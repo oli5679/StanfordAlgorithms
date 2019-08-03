@@ -38,13 +38,16 @@ class Kosaraju:
             vertex_list[e[i_from]].append(e[i_to])
         return vertex_list
 
-    def dfs(self, vertex_list, ordering=None):
+    def dfs(self, vertex_list, ordering=None, scc_flag=False, ranking_flag=False):
         n = len(vertex_list)
-        ranking = n - 1
-        rankings = {}
         explored = []
-        scc_group = 0
-        sccs = defaultdict(list)
+
+        if ranking_flag:
+            ranking = n - 1
+            rankings = {}
+        if scc_flag:
+            scc_group = 0
+            sccs = defaultdict(list)
         print(f"n = {n}")
         for i in tqdm(reversed(range(n))):
             if ordering:
@@ -53,17 +56,20 @@ class Kosaraju:
                 node = i
             if i not in explored:
                 to_explore = [node]
-                scc_group += 1
+                if scc_flag:
+                    scc_group += 1
                 while len(to_explore) > 0:
                     current_node = to_explore.pop(0)
-                    sccs[scc_group].append(current_node)
+                    if scc_flag:
+                        sccs[scc_group].append(current_node)
                     explored.append(current_node)
-                    for e in vertex_list[current_node]:
-                        if e not in explored:
-                            to_explore.insert(0, e)
-
-                    rankings[current_node] = ranking
-                    ranking -= 1
+                    not_already_explored = [
+                        e for e in vertex_list[current_node] if e not in explored
+                    ]
+                    to_explore = not_already_explored + to_explore
+                    if ranking_flag:
+                        rankings[current_node] = ranking
+                        ranking -= 1
 
         return rankings, sccs
 
@@ -72,13 +78,23 @@ class Kosaraju:
         vertex_list_rev = self._get_vertex_list(self.edges_list, reversed_flag=True)
 
         print("creatings topological ordering")
-        rankings, _ = self.dfs(vertex_list_rev)
+        topo_ordering, _ = self.dfs(
+            vertex_list=vertex_list_rev,
+            ordering=None,
+            scc_flag=False,
+            ranking_flag=True,
+        )
         print("setup (sccs)")
         del vertex_list_rev
         vertex_list = self._get_vertex_list(self.edges_list, reversed_flag=False)
 
         print("finding sccs")
-        _, scc = self.dfs(vertex_list, rankings)
+        _, scc = self.dfs(
+            vertex_list=vertex_list,
+            ordering=topo_ordering,
+            scc_flag=True,
+            ranking_flag=False,
+        )
 
         self.sccs = scc
 
